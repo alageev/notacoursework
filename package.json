@@ -1,0 +1,22 @@
+{
+  "name": "newnotacoursework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "htmls/bingo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^7.16.0",
+    "body-parser": "latest"
+  },
+  "devDependencies": {
+    "express-handlebars": "^3.1.0",
+    "express-session": "^1.17.0",
+    "pg-promise": "^10.3.5"
+  }
+}

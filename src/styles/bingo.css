@@ -1,0 +1,23 @@
+table {
+    border: 1px solid grey;
+    width: 95%;
+    margin:2.5%;
+}
+
+td {
+    background: white;
+    border: 1px solid grey;
+    text-align: center;
+    padding: 5px;
+    font-family: sans-serif;
+    width:18%;
+
+}
+
+caption {
+    font-size:40px
+}
+
+.GameCode {
+    margin: 2.5%
+}

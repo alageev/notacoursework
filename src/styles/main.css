@@ -1,0 +1,30 @@
+.gameCode {
+    height: 60px;
+    margin: 0;
+    font-size: 50px;
+    width: 200px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    padding: 0 0 0 20px;
+}
+.connectToGame{
+    font-size: 50px;
+    height: 65px;
+    width: 100px;
+    margin: 0 0 0 -5px;
+    padding: 3px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+a{
+    text-decoration: none;
+}
+.gameForm {
+    padding: 0 0 0 0;
+    margin-top:20%;
+    margin-left:40%
+}
+.buttonForm {
+    padding: 0 0 0 0;
+    margin-left:40%
+}

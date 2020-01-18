@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset = "utf-8">
+    <title>{{pageName}} – Bingo</title>
+    <link rel="stylesheet" href="styles/basePage.css">
+</head>
+<body>
+    <header>
+        {{pageName}}
+        <form action="/gameCode">
+            <input placeholder="123456" required pattern="[0-9]{6}" name="gameCode">
+            <input type="submit">
+        </form>
+    </header>
+    {{{body}}}
+</body>
+</html>

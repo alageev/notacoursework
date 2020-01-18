@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="styles/bingo.css">
+<script type="text/javascript">
+    let cookieName = `{{bingoName}}`
+    let words = `{{bingoWords}}`
+    let phrases = words.split(`,`)
+    for (let i = phrases.length; i < 25; i++){
+        phrases[i] = `Тыкни сюда🙃`
+    }
+</script>
+<table>
+    <tr>
+        <td id = "td0" onclick = "updateBingo(0)"></td>
+        <td id = "td1" onclick = "updateBingo(1)"></td>
+        <td id = "td2" onclick = "updateBingo(2)"></td>
+        <td id = "td3" onclick = "updateBingo(3)"></td>
+        <td id = "td4" onclick = "updateBingo(4)"></td>
+    </tr>
+    <tr>
+        <td id = "td5" onclick = "updateBingo(5)"></td>
+        <td id = "td6" onclick = "updateBingo(6)"></td>
+        <td id = "td7" onclick = "updateBingo(7)"></td>
+        <td id = "td8" onclick = "updateBingo(8)"></td>
+        <td id = "td9" onclick = "updateBingo(9)"></td>
+    </tr>
+    <tr>
+        <td id = "td10" onclick = "updateBingo(10)"></td>
+        <td id = "td11" onclick = "updateBingo(11)"></td>
+        <td id = "td12" onclick = "updateBingo(12)"></td>
+        <td id = "td13" onclick = "updateBingo(13)"></td>
+        <td id = "td14" onclick = "updateBingo(14)"></td>
+    </tr>
+    <tr>
+        <td id = "td15" onclick = "updateBingo(15)"></td>
+        <td id = "td16" onclick = "updateBingo(16)"></td>
+        <td id = "td17" onclick = "updateBingo(17)"></td>
+        <td id = "td18" onclick = "updateBingo(18)"></td>
+        <td id = "td19" onclick = "updateBingo(19)"></td>
+    </tr>
+    <tr>
+        <td id = "td20" onclick = "updateBingo(20)"></td>
+        <td id = "td21" onclick = "updateBingo(21)"></td>
+        <td id = "td22" onclick = "updateBingo(22)"></td>
+        <td id = "td23" onclick = "updateBingo(23)"></td>
+        <td id = "td24" onclick = "updateBingo(24)"></td>
+    </tr>
+</table>
+
+<script type="text/javascript" src="scripts/bingo.js"></script>
