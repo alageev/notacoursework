@@ -210,6 +210,7 @@ app.get(`/`, (request, response) => {
     response.render(`main`, {
         pageName: `Главная страница`
     })
+    response.sendStatus(200)
 })
 
 app.get(`/register`, (request, response) => {
