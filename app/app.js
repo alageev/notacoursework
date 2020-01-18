@@ -57,9 +57,9 @@ app.use(`/styles`, express.static(__dirname + `/styles`))
 
 app.set(`view engine`, `.hbs`)
 app.set(`views`, path.join(__dirname, `views/layouts`))
-app.listen(8080)
+app.listen(process.env.PORT || 8080)
 
-app.get(`/bingoEdit`, isLoggedIn, (request, response) => {
+app.get(`/bingoEdit`, isLoggedIn, (request, responscse) => {
     db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
         .then((data) =>{
             response.render(`bingoEdit`, {
