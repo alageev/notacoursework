@@ -12,6 +12,39 @@ const db = pgp("postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad5304
 
 
 /**/
+db.query(`create schema bingoschema;
+create table bingoschema.users
+(
+nickname int not null,
+password varchar not null
+);
+
+create unique index table_name_nickname_uindex
+on bingoschema.table_name (nickname);
+
+create table bingoschema.games
+(
+id int not null,
+players varchar array not null,
+bingo_id int not null
+);
+
+create unique index games_id_uindex
+on bingoschema.games (id);
+
+  create table bingoschema.bingos
+(
+id int not null,
+author varchar not null,
+words varchar array,
+name varchar not null
+);
+
+create unique index bingos_id_uindex
+on bingoschema.bingos (id);
+`).then(() => {
+    console.log(`db complete`)
+})
 
 app.use(session({
     secret: 'secretWord',   // секретное слово для шифрования
