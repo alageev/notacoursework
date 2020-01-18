@@ -59,7 +59,7 @@ app.set(`view engine`, `.hbs`)
 app.set(`views`, path.join(__dirname, `views/layouts`))
 app.listen(process.env.PORT || 8080)
 
-app.get(`/bingoEdit`, isLoggedIn, (request, responscse) => {
+app.get(`/bingoEdit`, isLoggedIn, (request, response) => {
     db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
         .then((data) =>{
             response.render(`bingoEdit`, {
