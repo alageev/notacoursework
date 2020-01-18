@@ -5,7 +5,7 @@ const session = require('express-session')
 const pgp = require("pg-promise")()
 const app = express()
 
-const db = pgp("postgres://postgres:1@127.0.0.1:5432/bingodatabase")
+const db = pgp("postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0\n")
 
 /*TEST AREA*/
 
