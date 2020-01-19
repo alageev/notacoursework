@@ -18,7 +18,7 @@ password varchar not null
 );
 
 create unique index users_nickname_uindex
-on bingoschema.table_name (nickname);
+on bingoschema.users (nickname);
 
 create table bingoschema.games
 (
