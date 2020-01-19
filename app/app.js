@@ -22,42 +22,6 @@ app.set(`views`, path.join(__dirname, `views/layouts`));
 app.listen(process.env.PORT || 8080);
 
 
-
-
-function getCookie(request, name) {
-    // let matches = document.cookie.match(new RegExp(
-    //     "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-    // ));
-    // return matches ? decodeURIComponent(matches[1]) : undefined;
-}
-
-function setCookie(name, value, options = {}) {
-
-    options = {
-        path: '/',
-        // при необходимости добавьте другие значения по умолчанию
-        ...options
-    };
-
-    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
-
-    for (let optionKey in options) {
-        updatedCookie += "; " + optionKey;
-        let optionValue = options[optionKey];
-        if (optionValue !== true) {
-            updatedCookie += "=" + optionValue;
-        }
-    }
-    document.cookie = updatedCookie;
-}
-
-function deleteCookie(name) {
-    setCookie(name, "", {
-        'max-age': -1
-    })
-}
-
-
 app.get(`/bingoEdit`, (request, response) => {
     db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
         .then((data) => {
