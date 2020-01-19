@@ -6,43 +6,10 @@ const pgp = require(`pg-promise`)();
 const app = express();
 const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
 
-app.use(cookieSession({
-    secret: `secretWord`,
-    key: `bingoSession`,
-    cookie: {
-        path: `/*`,
-        httpOnly: true,
-        maxAge: null
-    },
-    loggedIn: false,
-    nickname: ``,
-    seed: ``,
-    saveUninitialized: false,
-    resave: false
-}));
-
-
-const isLoggedIn = (request, response, next) => {
-    db.query(`select password from bingoschema.users where nickname = '${request.query.nickname}'`)
-        .then((data) => {
-            if (!cookieSession.loggedIn) {
-                if (`${request.query.password}` === data[0].password) {
-                    cookieSession.loggedIn = true;
-                    cookieSession.nickname = `${request.query.nickname}`
-                }
-            }
-            return next()
-        })
-        .catch(() => {
-            response.redirect(`/`)
-        });
-};
-
 app.engine(`.hbs`, exphbs({
     defaultLayout: `BasePage`,
     extname: `.hbs`,
     layoutsDir: path.join(__dirname, `/views/`)
-
 }));
 
 app.use(`/scripts`, express.static(__dirname + `/scripts`));
@@ -52,7 +19,51 @@ app.set(`view engine`, `.hbs`);
 app.set(`views`, path.join(__dirname, `views/layouts`));
 app.listen(process.env.PORT || 8080);
 
-app.get(`/bingoEdit`, isLoggedIn, (request, response) => {
+
+
+
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function setCookie(name, value, options = {}) {
+
+    options = {
+        path: '/',
+        // при необходимости добавьте другие значения по умолчанию
+        ...options
+    };
+
+    if (options.expires.toUTCString) {
+        options.expires = options.expires.toUTCString();
+    }
+
+    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+    for (let optionKey in options) {
+        updatedCookie += "; " + optionKey;
+        let optionValue = options[optionKey];
+        if (optionValue !== true) {
+            updatedCookie += "=" + optionValue;
+        }
+    }
+
+    document.cookie = updatedCookie;
+}
+
+function deleteCookie(name) {
+    setCookie(name, "", {
+        'max-age': -1
+    })
+}
+
+setCookie(`loggedIn`, false);
+setCookie(`nickname`, ``);
+
+app.get(`/bingoEdit`, (request, response) => {
     db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
         .then((data) => {
             response.render(`bingoEdit`, {
@@ -64,14 +75,14 @@ app.get(`/bingoEdit`, isLoggedIn, (request, response) => {
         });
 });
 
-app.get(`/bingoChange`, isLoggedIn, (request, response) => {
+app.get(`/bingoChange`, (request, response) => {
     db.query(`update bingoschema.bingos set words = '{${request.query.bingoWords}}', name = '${request.query.bingoName}' where id = '${request.query.bingoId}'`)
         .then(() => {
             response.redirect(`/userpage`);
         });
 });
 
-app.get(`/bingoStart`, isLoggedIn, (request, response) => {
+app.get(`/bingoStart`, (request, response) => {
     let complete = false;
     db.query(`select id from bingoschema.games`)
         .then((data) => {
@@ -87,7 +98,7 @@ app.get(`/bingoStart`, isLoggedIn, (request, response) => {
                     complete = true;
                 }
             }
-            db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' and author = '${cookieSession.nickname}'`)
+            db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' and author = '${getCookie(`nickname`)}'`)
                 .then((data) => {
                     let bingo_id = data[0].id;
                     db.query(`select id, players from bingoschema.games where bingo_id = ${data[0].id}`)
@@ -96,14 +107,14 @@ app.get(`/bingoStart`, isLoggedIn, (request, response) => {
                             let previousGameCode;
                             if (data != ``) {
                                 for (let i = 0; i < data[0].players.length; i++) {
-                                    if (data[0].players[i] === cookieSession.nickname) {
+                                    if (data[0].players[i] === getCookie(`nickname`)){
                                         isGame = true;
                                         previousGameCode = data[0].id;
                                     }
                                 }
                             }
                             if (!isGame) {
-                                db.query(`insert into bingoschema.games (id, players, bingo_id) values ('${gameCode}', '{${cookieSession.nickname}}', ${bingo_id})`)
+                                db.query(`insert into bingoschema.games (id, players, bingo_id) values ('${gameCode}', '{${getCookie(`nickname`)}}', ${bingo_id})`)
                                     .then(() => {
                                         response.redirect(`/bingo?gameID=${gameCode}`);
                                     })
@@ -132,8 +143,8 @@ app.get(`/tempLoginCheck`, (request, response) => {
                 }
             }
             if (!nicknameIsUsed) {
-                cookieSession.nickname = request.query.nickname;
-                cookieSession.loggedIn = true;
+                setCookie(`nickname`, `${request.query.nickname}`);
+                setCookie(`loggedIn`,true);
                 response.redirect(`/gameCode?gameCode=${request.query.gameCode}`);
             } else {
                 response.redirect(`/tempLogin?gameCode=${request.query.gameCode}`);
@@ -142,14 +153,14 @@ app.get(`/tempLoginCheck`, (request, response) => {
 });
 
 app.get(`/gameCode`, (request, response) => {
-    if (!cookieSession.loggedIn) {
+    if (!getCookie(`loggedIn`)) {
         response.redirect(`/tempLogin?gameCode=${request.query.gameCode}`);
     } else {
         db.query(`select players from bingoschema.games where id = '${request.query.gameCode}'`)
             .then((data) => {
                 let isPlaying = false;
                 for (let player of data[0].players) {
-                    if (player === cookieSession.nickname) {
+                    if (player === getCookie(`nickname`)) {
                         isPlaying = true;
                         break;
                     }
@@ -157,7 +168,7 @@ app.get(`/gameCode`, (request, response) => {
                 if (isPlaying) {
                     response.redirect(`/bingo?gameID=${request.query.gameCode}`);
                 } else {
-                    db.query(`update bingoschema.games set players = array_append(players, '${cookieSession.nickname}') where id = '${request.query.gameCode}'`)
+                    db.query(`update bingoschema.games set players = array_append(players, '${getCookie(`nickname`)}') where id = '${request.query.gameCode}'`)
                         .then(() => {
                             response.redirect(`/bingo?gameID=${request.query.gameCode}`)
                         });
@@ -166,7 +177,7 @@ app.get(`/gameCode`, (request, response) => {
     }
 });
 
-app.get(`/bingo`, isLoggedIn, (request, response) => {
+app.get(`/bingo`, (request, response) => {
     db.query(`select bingo_id from bingoschema.games where id = '${request.query.gameID}'`)
         .then((data) => {
             db.query(`select name, words from bingoschema.bingos where id = ${data[0].bingo_id}`)
@@ -181,7 +192,7 @@ app.get(`/bingo`, isLoggedIn, (request, response) => {
 });
 
 app.get(`/login`, (request, response) => {
-    if (!cookieSession.loggedIn) {
+    if (!getCookie(`loggedIn`)) {
         response.render(`login`, {
             pageName: `Вход`
         });
@@ -190,7 +201,7 @@ app.get(`/login`, (request, response) => {
     }
 });
 
-app.get(`/loginCheck`, isLoggedIn, (request, response) => {
+app.get(`/loginCheck`, (request, response) => {
     response.redirect(`/userpage`);
 });
 
@@ -213,8 +224,8 @@ app.get(`/registrationCheck`, (request, response) => {
                 if (request.query.pass1 === request.query.pass2) {
                     db.query(`insert into bingoschema.users (nickname, password) values ('${request.query.nickname}', '${request.query.pass1}')`)
                         .then(() => {
-                            cookieSession.nickname = request.query.nickname;
-                            cookieSession.loggedIn = true;
+                            setCookie(`nickname`, request.query.nickname);
+                            setCookie(`loggedIn`, true);
                             response.redirect(`/userpage`);
                         });
                 } else {
@@ -226,15 +237,15 @@ app.get(`/registrationCheck`, (request, response) => {
         });
 });
 
-app.get(`/userEdit`, isLoggedIn, (request, response) => {
+app.get(`/userEdit`, (request, response) => {
     response.render(`userEdit`, {
         pageName: `Редактировать профиль`,
     });
 });
 
-app.get(`/userpage`, isLoggedIn, (request, response) => {
-    if (cookieSession.loggedIn) {
-        db.query(`select * from bingoschema.bingos where author = '${cookieSession.nickname}'`)
+app.get(`/userpage`, (request, response) => {
+    if (getCookie(`loggedIn`)) {
+        db.query(`select * from bingoschema.bingos where author = '${getCookie(`nickname`)}'`)
             .then((data) => {
                 let bingoNames = [];
                 for (let i = 0; i < data.length; i++) {
@@ -251,13 +262,13 @@ app.get(`/userpage`, isLoggedIn, (request, response) => {
 });
 
 
-app.get(`/createBingo`, isLoggedIn, (request, response) => {
+app.get(`/createBingo`, (request, response) => {
     db.query(`select max(id) from bingoschema.bingos`)
         .then((data) => {
             if (data != ``) {
-                db.query(`insert into bingoschema.bingos (id, author, words, name) values (1, '${cookieSession.nickname}', '{}', 'new_${cookieSession.nickname}_bingo')`);
+                db.query(`insert into bingoschema.bingos (id, author, words, name) values (1, '${getCookie(`nickname`)}', '{}', 'new_${getCookie(`nickname`)}_bingo')`);
             } else {
-                db.query(`insert into bingoschema.bingos (id, author, words, name) values (${data[0].max + 1}, '${cookieSession.nickname}', '{}', 'new_${cookieSession.nickname}_bingo')`);
+                db.query(`insert into bingoschema.bingos (id, author, words, name) values (${data[0].max + 1}, '${getCookie(`nickname`)}', '{}', 'new_${getCookie(`nickname`)}_bingo')`);
             }
             response.redirect(`/bingoEdit?bingoName=new_${cookieSession.nickname}_bingo`);
         });
