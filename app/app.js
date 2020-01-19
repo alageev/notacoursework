@@ -30,7 +30,7 @@ app.get(`/bingoEdit`, (request, response) => {
                 pageName: `Редактировать бинго`,
                 formAction: `/userpage`,
                 buttonValue: `Отмена`,
-                notrender: `false`,
+                render: true,
                 bingoId: data[0].id,
                 bingoName: data[0].name,
                 bingoWords: data[0].words
@@ -97,7 +97,7 @@ app.get(`/tempLogin`, (request, response) => {
         pageName: `Временный вход`,
         formAction: `/`,
         buttonValue: `Отмена`,
-        render: `true`,
+        render: true,
         gameCode: request.query.gameCode
     });
 });
@@ -182,7 +182,7 @@ app.get(`/login`, (request, response) => {
             pageName: `Вход`,
             formAction: `/`,
             buttonValue: `Отмена`,
-            render: `true`,
+            render: true,
         });
     } else {
         response.redirect(`/userpage`);
@@ -214,7 +214,7 @@ app.get(`/`, (request, response) => {
         pageName: `Главная страница`,
         formAction: ``,
         buttonValue: ``,
-        render: `false`,
+        render: false,
     });
 });
 
@@ -223,7 +223,7 @@ app.get(`/register`, (request, response) => {
         pageName: `Регистрация`,
         formAction: `/`,
         buttonValue: `Отмена`,
-        render: `true`,
+        render: true,
     });
 });
 
@@ -253,7 +253,7 @@ app.get(`/userEdit`, (request, response) => {
         pageName: `Редактировать профиль`,
         formAction: `/userpage`,
         buttonValue: `Отмена`,
-        render: `true`,
+        render: true,
     });
 });
 
@@ -270,7 +270,7 @@ app.get(`/userpage`, (request, response) => {
                     formAction: `/exit`,
                     buttonValue: `Выйти`,
                     bingos: bingoNames,
-                    render: `true`,
+                    render: true,
                 });
             });
     } else {
