@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const pgp = require(`pg-promise`)();
 const app = express();
 const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
+//const db = pgp("postgres://postgres:1@127.0.0.1:5432/bingodatabase");
 
 app.engine(`.hbs`, exphbs({
     defaultLayout: `BasePage`,
@@ -198,12 +199,26 @@ app.get(`/login`, (request, response) => {
 });
 
 app.get(`/loginCheck`, (request, response) => {
-    response.redirect(`/userpage`);
+    if (request.cookies[`loggedIn`] !== `true`) {
+        db.query(`select password from bingoschema.users where nickname = '${request.query.nickname}'`)
+            .then((data) => {
+                if (data[0].password === request.query.password) {
+                    response.cookie(`nickname`, `${request.query.nickname}`)
+                    response.cookie(`loggedIn`, true);
+                    response.redirect(`/userpage`);
+                } else {}
+                response.redirect(`/login`)
+            })
+    } else {
+        response.redirect(`/userpage`);
+    }
 });
 
 app.get(`/`, (request, response) => {
-    response.cookie(`nickname`, ``);
-    response.cookie(`loggedIn`, false);
+    if (request.cookies[`loggedIn`] !== `true`) {
+        response.cookie(`nickname`, ``);
+        response.cookie(`loggedIn`, false);
+    }
     response.render(`main`, {
         pageName: `Главная страница`
     });
@@ -244,7 +259,7 @@ app.get(`/userEdit`, (request, response) => {
 });
 
 app.get(`/userpage`, (request, response) => {
-    if (getCookie(`loggedIn`) === `true`) {
+    if (request.cookies[`loggedIn`] === `true`) {
         db.query(`select * from bingoschema.bingos where author = '${request.cookies[`nickname`]}'`)
             .then((data) => {
                 let bingoNames = [];
@@ -257,7 +272,7 @@ app.get(`/userpage`, (request, response) => {
                 });
             });
     } else {
-        response.redirect(`/`);
+        response.redirect(`/login`);
     }
 });
 
