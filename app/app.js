@@ -48,8 +48,8 @@ app.get(`/bingoStart`, (request, response) => {
             let gameCode = Math.round(99999.5 + Math.random() * 999999);
             if (data != ``) {
                 while (!complete) {
-                    for (let code of data[0].id) {
-                        if (gameCode === code) {
+                    for (let i = 0; i < data.length; i++) {
+                        if (gameCode === data[i].id) {
                             gameCode = Math.round(99999.5 + Math.random() * 999999);
                             break;
                         }
