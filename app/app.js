@@ -146,19 +146,23 @@ app.get(`/gameCode`, (request, response) => {
 app.get(`/bingo`, (request, response) => {
     db.query(`select bingo_id from bingoschema.games where id = '${request.query.gameID}'`)
         .then((data) => {
-            db.query(`select name, words from bingoschema.bingos where id = ${data[0].bingo_id}`)
-                .then((data) => {
-                    response.render(`game`, {
-                        pageName: request.query.code,
-                        bingoWords: data[0].words,
-                        bingoName: data[0].name
+            if (data != ``) {
+                db.query(`select name, words from bingoschema.bingos where id = ${data[0].bingo_id}`)
+                    .then((data) => {
+                        response.render(`game`, {
+                            pageName: request.query.code,
+                            bingoWords: data[0].words,
+                            bingoName: data[0].name
+                        });
                     });
-                });
+            } else {
+                response.redirect(`/login`)
+            }
         });
 });
 
 app.get(`/login`, (request, response) => {
-    if (request.cookies[`loggedIn`] === `false`) {
+    if (request.cookies[`loggedIn`] !== `true`) {
         response.render(`login`, {
             pageName: `Вход`
         });
