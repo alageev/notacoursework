@@ -3,38 +3,22 @@ const express = require(`express`);
 const exphbs = require(`express-handlebars`);
 const session = require(`express-session`);
 const pgp = require(`pg-promise`)();
-//const pg = require(`pg`);
 const app = express();
 const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
 
-db.query(`alter table bingoschema.users drop column nickname`).then(() =>{
-    db.query(`alter table bingoschema.users
-add nickname varchar not null;
-
-create unique index users_nickname_uindex
-on bingoschema.users (nickname);
-
-alter table bingoschema.users
-add constraint users_pk
-primary key (nickname);
-`)
-}).then(()=>{
-
-
-
 app.use(session({
-    secret: `secretWord`,   // секретное слово для шифрования
-    key: `bingoSession`,             // имя куки
+    secret: `secretWord`,
+    key: `bingoSession`,
     cookie: {
-        path: `/*`,          // где действует
-        httpOnly: true,     // чтобы куку не могли читать на клиенте
-        maxAge: null        // время жизни куки
+        path: `/*`,
+        httpOnly: true,
+        maxAge: null
     },
     loggedIn: false,
     nickname: ``,
     seed: ``,
-    saveUninitialized: false,   // on default
-    resave: false               // on  default
+    saveUninitialized: false,
+    resave: false
 }));
 
 
@@ -280,5 +264,3 @@ app.use((err, request, response) => {
     console.log(err);
     response.status(500).send(`Something broke!`)
 });
-
-})
