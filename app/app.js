@@ -5,8 +5,8 @@ const exphbs = require(`express-handlebars`);
 const cookieParser = require('cookie-parser');
 const pgp = require(`pg-promise`)();
 const app = express();
-const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
-//const db = pgp("postgres://postgres:1@127.0.0.1:5432/bingodatabase");
+//const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
+const db = pgp("postgres://postgres:1@127.0.0.1:5432/bingodatabase");
 
 app.engine(`.hbs`, exphbs({
     defaultLayout: `BasePage`,
@@ -24,18 +24,22 @@ app.set(`views`, path.join(__dirname, `views/layouts`));
 app.listen(process.env.PORT || 8080);
 
 app.get(`/bingoEdit`, (request, response) => {
-    db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
-        .then((data) => {
-            response.render(`bingoEdit`, {
-                pageName: `Редактировать бинго`,
-                formAction: `/userpage`,
-                buttonValue: `Отмена`,
-                render: true,
-                bingoId: data[0].id,
-                bingoName: data[0].name,
-                bingoWords: data[0].words
+    if (request.query.bingoName === undefined){
+        response.redirect(`/userpage`)
+    } else {
+        db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
+            .then((data) => {
+                response.render(`bingoEdit`, {
+                    pageName: `Редактировать бинго`,
+                    formAction: `/userpage`,
+                    buttonValue: `Отмена`,
+                    render: true,
+                    bingoId: data[0].id,
+                    bingoName: data[0].name,
+                    bingoWords: data[0].words
+                });
             });
-        });
+    }
 });
 
 app.get(`/bingoChange`, (request, response) => {
@@ -48,51 +52,52 @@ app.get(`/bingoChange`, (request, response) => {
 
 app.get(`/bingoStart`, (request, response) => {
     let complete = false;
-    if (request.query[`bingoName`] == ``){
+    if (request.query.bingoName === undefined){
         response.redirect(`/userpage`)
-    }
-    db.query(`select id from bingoschema.games`)
-        .then((data) => {
-            let gameCode = Math.round(99999.5 + Math.random() * 999999);
-            if (data != ``) {
-                while (!complete) {
-                    for (let i = 0; i < data.length; i++) {
-                        if (gameCode === data[i].id) {
-                            gameCode = Math.round(99999.5 + Math.random() * 999999);
-                            break;
+    } else {
+        db.query(`select id from bingoschema.games`)
+            .then((data) => {
+                let gameCode = Math.round(99999.5 + Math.random() * 999999);
+                if (data != ``) {
+                    while (!complete) {
+                        for (let i = 0; i < data.length; i++) {
+                            if (gameCode === data[i].id) {
+                                gameCode = Math.round(99999.5 + Math.random() * 999999);
+                                break;
+                            }
                         }
+                        complete = true;
                     }
-                    complete = true;
                 }
-            }
-            db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' 
+                db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' 
             and author = '${request.cookies[`nickname`]}'`)
-                .then((data) => {
-                    let bingo_id = data[0].id;
-                    db.query(`select id, players from bingoschema.games where bingo_id = ${data[0].id}`)
-                        .then((data) => {
-                            let isGame = false;
-                            let previousGameCode;
-                            if (data != ``) {
-                                for (let i = 0; i < data[0].players.length; i++) {
-                                    if (data[0].players[i] === request.cookies[`nickname`]){
-                                        isGame = true;
-                                        previousGameCode = data[0].id;
+                    .then((data) => {
+                        let bingo_id = data[0].id;
+                        db.query(`select id, players from bingoschema.games where bingo_id = ${data[0].id}`)
+                            .then((data) => {
+                                let isGame = false;
+                                let previousGameCode;
+                                if (data != ``) {
+                                    for (let i = 0; i < data[0].players.length; i++) {
+                                        if (data[0].players[i] === request.cookies[`nickname`]) {
+                                            isGame = true;
+                                            previousGameCode = data[0].id;
+                                        }
                                     }
                                 }
-                            }
-                            if (!isGame) {
-                                db.query(`insert into bingoschema.games (id, players, bingo_id) values 
+                                if (!isGame) {
+                                    db.query(`insert into bingoschema.games (id, players, bingo_id) values 
                                 ('${gameCode}', '{${request.cookies[`nickname`]}}', ${bingo_id})`)
-                                    .then(() => {
-                                        response.redirect(`/bingo?gameID=${gameCode}`);
-                                    })
-                            } else {
-                                response.redirect(`/bingo?gameID=${previousGameCode}`);
-                            }
-                        });
-                });
-        });
+                                        .then(() => {
+                                            response.redirect(`/bingo?gameID=${gameCode}`);
+                                        })
+                                } else {
+                                    response.redirect(`/bingo?gameID=${previousGameCode}`);
+                                }
+                            });
+                    });
+            });
+    }
 });
 
 app.get(`/tempLogin`, (request, response) => {
