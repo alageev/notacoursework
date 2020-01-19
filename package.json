@@ -11,11 +11,11 @@
   "author": "alageev",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
-    "pg": "^7.16.0",
     "body-parser": "latest",
+    "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
     "express-session": "^1.17.0",
+    "pg": "^7.17.1",
     "pg-promise": "^10.3.5"
   },
   "engines": {
