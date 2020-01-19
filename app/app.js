@@ -247,7 +247,7 @@ on bingoschema.bingos (id);
             .then((data) => {
                 if (data == ``) {
                     if (request.query.pass1 === request.query.pass2) {
-                        db.query(`insert into bingoschema.users (nickname, email, password) values ('${request.query.nickname}', '${request.query.email}', '${request.query.pass1}')`)
+                        db.query(`insert into bingoschema.users (nickname, password) values ('${request.query.nickname}', '${request.query.pass1}')`)
                             .then(() => {
                                 session.nickname = request.query.nickname;
                                 session.loggedIn = true;
