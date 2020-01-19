@@ -19,7 +19,6 @@ for (let names of seed){
         seed = ``;
     }
 }
-console.log(seed);
 
 window.onload = () => {
     colorCheck(marked);
