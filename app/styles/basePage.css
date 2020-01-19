@@ -13,3 +13,10 @@ body {
     padding-left: 20px;
     margin:0px
 }
+
+.leftForm {
+    float:left;
+}
+.rightForm {
+    float:right;
+}

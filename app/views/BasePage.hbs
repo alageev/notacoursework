@@ -8,9 +8,12 @@
 <body>
     <header>
         {{pageName}}
-        <form action="/gameCode">
+        <form action="/gameCode" class="leftForm">
             <input placeholder="123456" required pattern="[0-9]{6}" name="gameCode">
             <input type="submit">
+        </form>
+        <form action="{{formAction}}"  class="rightForm" >
+            <input type="submit" value="{{buttonValue}}">
         </form>
     </header>
     {{{body}}}
