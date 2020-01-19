@@ -11,18 +11,12 @@
   "author": "alageev",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "latest",
-    "cookie-session": "^1.4.0",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
-    "express-session": "^1.17.0",
-    "pg": "^7.17.1",
     "pg-promise": "^10.3.5"
   },
   "engines": {
     "node": "10.16.0"
-  },
-  "devDependencies": {
   }
 }
