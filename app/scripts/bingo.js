@@ -11,11 +11,13 @@ const colors = [
 ];
 
 let marked = Array(25);
-let seed = document.cookie.split(`;`);
-console.log(seed)
-for (let names of seed){
-    if (names.substr(0, 6) === cookieName){
-        seed = names.substr(7);
+let cookies = document.cookie.split(`;`);
+let seed = ``;
+console.log(cookies)
+for (let cookie of cookies){
+    if (cookie.substr(0, 6) === cookieName){
+        seed = cookie.substr(7);
+        break;
     } else {
         seed = ``;
     }
