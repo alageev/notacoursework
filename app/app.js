@@ -193,6 +193,9 @@ app.get(`/loginCheck`, (request, response) => {
     if (request.cookies[`loggedIn`] !== `true`) {
         db.query(`select password from bingoschema.users where nickname = '${request.query.nickname}'`)
             .then((data) => {
+                if (data == ``) {
+                    response.redirect(`/login`);
+                }
                 if (data[0].password === request.query.password) {
                     response.cookie(`nickname`, `${request.query.nickname}`)
                     response.cookie(`loggedIn`, true);
