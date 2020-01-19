@@ -13,14 +13,15 @@ app.engine(`.hbs`, exphbs({
     extname: `.hbs`,
     layoutsDir: path.join(__dirname, `/views/`)
 }));
+
 app.use(cookieParser());
 app.use(`/scripts`, express.static(__dirname + `/scripts`));
 app.use(`/styles`, express.static(__dirname + `/styles`));
 
 app.set(`view engine`, `.hbs`);
 app.set(`views`, path.join(__dirname, `views/layouts`));
-app.listen(process.env.PORT || 8080);
 
+app.listen(process.env.PORT || 8080);
 
 app.get(`/bingoEdit`, (request, response) => {
     db.query(`select id, name, words from bingoschema.bingos where name = '${request.query.bingoName}'`)
@@ -35,7 +36,8 @@ app.get(`/bingoEdit`, (request, response) => {
 });
 
 app.get(`/bingoChange`, (request, response) => {
-    db.query(`update bingoschema.bingos set words = '{${request.query.bingoWords}}', name = '${request.query.bingoName}' where id = '${request.query.bingoId}'`)
+    db.query(`update bingoschema.bingos set words = '{${request.query.bingoWords}}',
+    name = '${request.query.bingoName}' where id = '${request.query.bingoId}'`)
         .then(() => {
             response.redirect(`/userpage`);
         });
@@ -57,7 +59,8 @@ app.get(`/bingoStart`, (request, response) => {
                     complete = true;
                 }
             }
-            db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' and author = '${request.cookies[`nickname`]}'`)
+            db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' 
+            and author = '${request.cookies[`nickname`]}'`)
                 .then((data) => {
                     let bingo_id = data[0].id;
                     db.query(`select id, players from bingoschema.games where bingo_id = ${data[0].id}`)
@@ -73,7 +76,8 @@ app.get(`/bingoStart`, (request, response) => {
                                 }
                             }
                             if (!isGame) {
-                                db.query(`insert into bingoschema.games (id, players, bingo_id) values ('${gameCode}', '{${request.cookies[`nickname`]}}', ${bingo_id})`)
+                                db.query(`insert into bingoschema.games (id, players, bingo_id) values 
+                                ('${gameCode}', '{${request.cookies[`nickname`]}}', ${bingo_id})`)
                                     .then(() => {
                                         response.redirect(`/bingo?gameID=${gameCode}`);
                                     })
@@ -129,7 +133,8 @@ app.get(`/gameCode`, (request, response) => {
                 if (isPlaying) {
                     response.redirect(`/bingo?gameID=${request.query.gameCode}`);
                 } else {
-                    db.query(`update bingoschema.games set players = array_append(players, '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
+                    db.query(`update bingoschema.games set players = array_append(players, 
+                    '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
                         .then(() => {
                             response.redirect(`/bingo?gameID=${request.query.gameCode}`)
                         });
@@ -199,7 +204,8 @@ app.get(`/registrationCheck`, (request, response) => {
         .then((data) => {
             if (data == ``) {
                 if (request.query.pass1 === request.query.pass2) {
-                    db.query(`insert into bingoschema.users (nickname, password) values ('${request.query.nickname}', '${request.query.pass1}')`)
+                    db.query(`insert into bingoschema.users (nickname, password) values 
+                    ('${request.query.nickname}', '${request.query.pass1}')`)
                         .then(() => {
                             response.cookie(`nickname`, request.query.nickname);
                             response.cookie(`loggedIn`, true);
@@ -245,16 +251,18 @@ app.get(`/createBingo`, (request, response) => {
     db.query(`select max(id) from bingoschema.bingos`)
         .then((data) => {
             if (data != ``) {
-                db.query(`insert into bingoschema.bingos (id, author, words, name) values (1, '${request.cookies[`nickname`]}', '{}', 'new_${request.cookies[`nickname`]}_bingo')`);
+                db.query(`insert into bingoschema.bingos (id, author, words, name) values 
+                (1, '${request.cookies[`nickname`]}', '{}', 'new_${request.cookies[`nickname`]}_bingo')`);
             } else {
-                db.query(`insert into bingoschema.bingos (id, author, words, name) values (${data[0].max + 1}, '${request.cookies[`nickname`]}', '{}', 'new_${request.cookies[`nickname`]}_bingo')`);
+                db.query(`insert into bingoschema.bingos (id, author, words, name) values 
+                (${data[0].max + 1}, '${request.cookies[`nickname`]}', '{}', 'new_${request.cookies[`nickname`]}_bingo')`);
             }
             response.redirect(`/bingoEdit?bingoName=new_${request.cookies[`nickname`]}_bingo`);
         });
 });
 
-app.use((err, request, response) => {
-    // логирование ошибки, пока просто console.log
-    console.log(err);
-    response.status(500).send(`Something broke!`)
-});
+// app.use((err, request, response) => {
+//     // логирование ошибки, пока просто console.log
+//     console.log(err);
+//     response.status(500).send(`Something broke!`)
+// });
