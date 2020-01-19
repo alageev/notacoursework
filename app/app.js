@@ -48,6 +48,9 @@ app.get(`/bingoChange`, (request, response) => {
 
 app.get(`/bingoStart`, (request, response) => {
     let complete = false;
+    if (request.query.length === 0){
+        response.redirect(`/userpage`)
+    }
     db.query(`select id from bingoschema.games`)
         .then((data) => {
             let gameCode = Math.round(99999.5 + Math.random() * 999999);
