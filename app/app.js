@@ -48,7 +48,7 @@ app.get(`/bingoChange`, (request, response) => {
 
 app.get(`/bingoStart`, (request, response) => {
     let complete = false;
-    if (request.query.bingoName == ``){
+    if (request.query[`bingoName`] == ``){
         response.redirect(`/userpage`)
     }
     db.query(`select id from bingoschema.games`)
