@@ -127,21 +127,29 @@ app.get(`/gameCode`, (request, response) => {
     } else {
         db.query(`select players from bingoschema.games where id = '${request.query.gameCode}'`)
             .then((data) => {
-                let isPlaying = false;
-                for (let player of data[0].players) {
-                    if (player === request.cookies[`nickname`]) {
-                        isPlaying = true;
-                        break;
+                if (data == ``){
+                    if (request.cookies[`loggedIn`] === `true`){
+                        response.redirect(`/userpage`)
+                    } else {
+                        response.redirect(`/`)
                     }
-                }
-                if (isPlaying) {
-                    response.redirect(`/bingo?gameID=${request.query.gameCode}`);
                 } else {
-                    db.query(`update bingoschema.games set players = array_append(players, 
+                    let isPlaying = false;
+                    for (let player of data[0].players) {
+                        if (player === request.cookies[`nickname`]) {
+                            isPlaying = true;
+                            break;
+                        }
+                    }
+                    if (isPlaying) {
+                        response.redirect(`/bingo?gameID=${request.query.gameCode}`);
+                    } else {
+                        db.query(`update bingoschema.games set players = array_append(players, 
                     '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
-                        .then(() => {
-                            response.redirect(`/bingo?gameID=${request.query.gameCode}`)
-                        });
+                            .then(() => {
+                                response.redirect(`/bingo?gameID=${request.query.gameCode}`)
+                            });
+                    }
                 }
             });
     }
