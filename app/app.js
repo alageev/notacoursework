@@ -150,6 +150,7 @@ app.get(`/bingo`, (request, response) => {
                 db.query(`select name, words from bingoschema.bingos where id = ${data[0].bingo_id}`)
                     .then((data) => {
                         response.render(`game`, {
+                            gameCode: data[0].bingo_id,
                             pageName: request.query.code,
                             bingoWords: data[0].words,
                             bingoName: data[0].name

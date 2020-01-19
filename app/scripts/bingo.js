@@ -13,8 +13,8 @@ const colors = [
 let marked = Array(25);
 let seed = document.cookie.split(`;`);
 for (let names of seed){
-    if (names.substr(0, cookieName.length - 1) === cookieName){
-        seed = names.substr(cookieName.length + 1);
+    if (names.substr(0, 6) === cookieName){
+        seed = names.substr(7);
     } else {
         seed = ``;
     }
@@ -27,7 +27,7 @@ window.onload = () => {
 if (seed === ``){
     generateBingo();
 } else {
-    newBingo();
+    newBingo(seed);
 }
 
 for (let i = 0; i < 25; i++){

@@ -1,8 +1,7 @@
 <link rel="stylesheet" href="styles/bingo.css">
 <script type="text/javascript">
-    let cookieName = `{{bingoName}}`
-    let words = `{{bingoWords}}`
-    let phrases = words.split(`,`)
+    let cookieName = `{{gameCode}}`
+    let phrases = `{{bingoWords}}`.split(`,`)
     for (let i = phrases.length; i < 25; i++){
         phrases[i] = `Тыкни сюда🙃`
     }
