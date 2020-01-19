@@ -30,6 +30,7 @@ app.get(`/bingoEdit`, (request, response) => {
                 pageName: `Редактировать бинго`,
                 formAction: `/userpage`,
                 buttonValue: `Отмена`,
+                render: `true`,
                 bingoId: data[0].id,
                 bingoName: data[0].name,
                 bingoWords: data[0].words
@@ -96,6 +97,7 @@ app.get(`/tempLogin`, (request, response) => {
         pageName: `Временный вход`,
         formAction: `/`,
         buttonValue: `Отмена`,
+        render: `true`,
         gameCode: request.query.gameCode
     });
 });
@@ -155,6 +157,7 @@ app.get(`/bingo`, (request, response) => {
                             pageName: request.query.gameID,
                             formAction: `/bingoExit?gameID=${request.query.gameID}`,
                             buttonValue: `выйти из игры`,
+                            render: `true`,
                             bingoWords: data[0].words,
                             bingoName: data[0].name
                         });
@@ -171,6 +174,7 @@ app.get(`/login`, (request, response) => {
             pageName: `Вход`,
             formAction: `/`,
             buttonValue: `Отмена`,
+            render: `true`,
         });
     } else {
         response.redirect(`/userpage`);
@@ -201,7 +205,8 @@ app.get(`/`, (request, response) => {
     response.render(`main`, {
         pageName: `Главная страница`,
         formAction: ``,
-        buttonValue: ``
+        buttonValue: ``,
+        render: `false`,
     });
 });
 
@@ -209,7 +214,8 @@ app.get(`/register`, (request, response) => {
     response.render(`register`, {
         pageName: `Регистрация`,
         formAction: `/`,
-        buttonValue: `Отмена`
+        buttonValue: `Отмена`,
+        render: `true`,
     });
 });
 
@@ -238,7 +244,8 @@ app.get(`/userEdit`, (request, response) => {
     response.render(`userEdit`, {
         pageName: `Редактировать профиль`,
         formAction: `/userpage`,
-        buttonValue: `Отмена`
+        buttonValue: `Отмена`,
+        render: `true`,
     });
 });
 
@@ -254,7 +261,8 @@ app.get(`/userpage`, (request, response) => {
                     pageName: `Мои бинго`,
                     formAction: `/exit`,
                     buttonValue: `Выйти`,
-                    bingos: bingoNames
+                    bingos: bingoNames,
+                    render: `true`,
                 });
             });
     } else {
