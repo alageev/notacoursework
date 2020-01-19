@@ -122,37 +122,33 @@ app.get(`/tempLoginCheck`, (request, response) => {
 });
 
 app.get(`/gameCode`, (request, response) => {
-    if (request.cookies[`loggedIn`] === `false`) {
-        response.redirect(`/tempLogin?gameCode=${request.query.gameCode}`);
-    } else {
-        db.query(`select players from bingoschema.games where id = '${request.query.gameCode}'`)
-            .then((data) => {
-                if (data == ``){
-                    if (request.cookies[`loggedIn`] === `true`){
-                        response.redirect(`/userpage`)
-                    } else {
-                        response.redirect(`/`)
-                    }
+    db.query(`select players from bingoschema.games where id = '${request.query.gameCode}'`)
+        .then((data) => {
+            if (data == ``){
+                if (request.cookies[`loggedIn`] === `true`){
+                    response.redirect(`/userpage`)
                 } else {
-                    let isPlaying = false;
-                    for (let player of data[0].players) {
-                        if (player === request.cookies[`nickname`]) {
-                            isPlaying = true;
-                            break;
-                        }
-                    }
-                    if (isPlaying) {
-                        response.redirect(`/bingo?gameID=${request.query.gameCode}`);
-                    } else {
-                        db.query(`update bingoschema.games set players = array_append(players, 
-                    '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
-                            .then(() => {
-                                response.redirect(`/bingo?gameID=${request.query.gameCode}`)
-                            });
+                    response.redirect(`/`)
+                }
+            } else {
+                let isPlaying = false;
+                for (let player of data[0].players) {
+                    if (player === request.cookies[`nickname`]) {
+                        isPlaying = true;
+                        break;
                     }
                 }
-            });
-    }
+                if (isPlaying) {
+                    response.redirect(`/bingo?gameID=${request.query.gameCode}`);
+                } else {
+                    db.query(`update bingoschema.games set players = array_append(players, 
+                '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
+                        .then(() => {
+                            response.redirect(`/bingo?gameID=${request.query.gameCode}`)
+                        });
+                }
+            }
+        });
 });
 
 app.get(`/bingo`, (request, response) => {
