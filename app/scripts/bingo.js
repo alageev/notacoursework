@@ -12,6 +12,7 @@ const colors = [
 
 let marked = Array(25);
 let seed = document.cookie.split(`;`);
+console.log(seed)
 for (let names of seed){
     if (names.substr(0, 6) === cookieName){
         seed = names.substr(7);
@@ -62,13 +63,12 @@ function generateBingo(){
 }
 
 function newBingo(newSeed){
-    seed = newSeed;
     let colorCode;
     for (let i = 0; i < 25; i++){
         if (i % 5 === 0){
             colorCode = to10(newSeed.substr(25 + Math.floor(i / 5), 1));
         }
-        document.getElementById(`td${i}`).innerText = phrases[to10(seed.substr(i, 1))];
+        document.getElementById(`td${i}`).innerText = phrases[to10(newSeed.substr(i, 1))];
         if (colorCode % 2 === 1){
             document.getElementById(`td${i}`).style.color = `#f0f0f0`;
             document.getElementById(`td${i}`).style.background = colors[Math.round(-0.5 + Math.random() * 9)];
