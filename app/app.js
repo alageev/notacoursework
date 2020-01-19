@@ -30,7 +30,7 @@ app.get(`/bingoEdit`, (request, response) => {
                 pageName: `Редактировать бинго`,
                 formAction: `/userpage`,
                 buttonValue: `Отмена`,
-                render: `true`,
+                notrender: `false`,
                 bingoId: data[0].id,
                 bingoName: data[0].name,
                 bingoWords: data[0].words
@@ -97,7 +97,7 @@ app.get(`/tempLogin`, (request, response) => {
         pageName: `Временный вход`,
         formAction: `/`,
         buttonValue: `Отмена`,
-        render: `true`,
+        notrender: `false`,
         gameCode: request.query.gameCode
     });
 });
@@ -165,7 +165,7 @@ app.get(`/bingo`, (request, response) => {
                             pageName: request.query.gameID,
                             formAction: `/bingoExit?gameID=${request.query.gameID}`,
                             buttonValue: `выйти из игры`,
-                            render: `true`,
+                            notrender: `false`,
                             bingoWords: data[0].words,
                             bingoName: data[0].name
                         });
@@ -182,7 +182,7 @@ app.get(`/login`, (request, response) => {
             pageName: `Вход`,
             formAction: `/`,
             buttonValue: `Отмена`,
-            render: `true`,
+            notrender: `false`,
         });
     } else {
         response.redirect(`/userpage`);
@@ -214,7 +214,7 @@ app.get(`/`, (request, response) => {
         pageName: `Главная страница`,
         formAction: ``,
         buttonValue: ``,
-        render: `false`,
+        notrender: `true`,
     });
 });
 
@@ -223,7 +223,7 @@ app.get(`/register`, (request, response) => {
         pageName: `Регистрация`,
         formAction: `/`,
         buttonValue: `Отмена`,
-        render: `true`,
+        notrender: `false`,
     });
 });
 
@@ -253,7 +253,7 @@ app.get(`/userEdit`, (request, response) => {
         pageName: `Редактировать профиль`,
         formAction: `/userpage`,
         buttonValue: `Отмена`,
-        render: `true`,
+        notrender: `false`,
     });
 });
 
@@ -270,7 +270,7 @@ app.get(`/userpage`, (request, response) => {
                     formAction: `/exit`,
                     buttonValue: `Выйти`,
                     bingos: bingoNames,
-                    render: `true`,
+                    notrender: `false`,
                 });
             });
     } else {
