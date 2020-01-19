@@ -255,7 +255,7 @@ app.get(`/createBingo`, isLoggedIn, (request, response) => {
     db.query(`select max(id) from bingoschema.bingos`)
         .then((data) => {
             db.query(`insert into bingoschema.bingos (id, author, words, name) values (${data[0].max + 1}, '${session.nickname}', '{}', 'new_${session.nickname}'s_bingo')`);
-            response.redirect(`/bingoEdit?bingoName=new_${session.nickname}'s_bingo`);
+            response.redirect(`/bingoEdit?bingoName=new_${session.nickname}_bingo`);
         });
 });
 
