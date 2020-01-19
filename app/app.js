@@ -250,7 +250,7 @@ app.get(`/userpage`, (request, response) => {
 app.get(`/createBingo`, (request, response) => {
     db.query(`select max(id) from bingoschema.bingos`)
         .then((data) => {
-            if (data != ``) {
+            if (data == ``) {
                 db.query(`insert into bingoschema.bingos (id, author, words, name) values 
                 (1, '${request.cookies[`nickname`]}', '{}', 'new_${request.cookies[`nickname`]}_bingo')`);
             } else {
