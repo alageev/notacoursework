@@ -10,6 +10,7 @@ const colors = [
     `#ffd60a`  //yellow
 ];
 
+
 let marked = Array(25);
 let cookies = document.cookie.split(`;`);
 let seed = ``;
