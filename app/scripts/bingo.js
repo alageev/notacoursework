@@ -24,7 +24,7 @@ for (let cookie of cookies){
 }
 
 window.onload = () => {
-    colorCheck(marked);
+    colorCheck();
 };
 
 if (seed === ``){
@@ -70,7 +70,7 @@ function newBingo(newSeed){
         if (i % 5 === 0){
             colorCode = to10(newSeed.substr(25 + Math.floor(i / 5), 1));
         }
-        document.getElementById(`td${i}`).innerText = phrases[to10(newSeed.substr(i, 1))];
+        document.getElementById(`td${i}`).innerText = phrases[to10(newSeed.substr(i, 1))].replace(`-`,` `).replace(`;`,`,`);
         if (colorCode % 2 === 1){
             document.getElementById(`td${i}`).style.color = `#f0f0f0`;
             document.getElementById(`td${i}`).style.background = colors[Math.round(-0.5 + Math.random() * 9)];
@@ -85,7 +85,7 @@ function newBingo(newSeed){
     markedToSeed();
 }
 
-function colorCheck(marked){
+function colorCheck(){
     for (let i = 0; i < 25; i++){
         if (marked[i]){
             document.getElementById(`td${i}`).style.color = `#ffffff`;
