@@ -70,7 +70,15 @@ function newBingo(newSeed){
         if (i % 5 === 0){
             colorCode = to10(newSeed.substr(25 + Math.floor(i / 5), 1));
         }
-        document.getElementById(`td${i}`).innerText = phrases[to10(newSeed.substr(i, 1))].replace(`_`,` `).replace(`;`,`,`);
+        let tempString = phrases[to10(newSeed.substr(i, 1))];
+        while (tempString.includes(`_`) || tempString.includes(`;`)){
+            if (tempString.includes(`_`)){
+                tempString = tempString.replace(`_`, ` `);
+            } else {
+                tempString = tempString.replace(`;`, `,`);
+            }
+        }
+        document.getElementById(`td${i}`).innerText = tempString;
         if (colorCode % 2 === 1){
             document.getElementById(`td${i}`).style.color = `#f0f0f0`;
             document.getElementById(`td${i}`).style.background = colors[Math.round(-0.5 + Math.random() * 9)];
