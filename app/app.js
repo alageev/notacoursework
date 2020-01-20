@@ -166,7 +166,7 @@ app.get(`/bingo`, (request, response) => {
                     .then((data) => {
                         response.render(`game`, {
                             pageName: request.query.gameID,
-                            formAction: `/bingoExit?gameID=${request.query.gameID}`,
+                            formAction: `/bingoExit?gameID%=${request.query.gameID}`,
                             buttonValue: `выйти из игры`,
                             render: `true`,
                             bingoWords: data[0].words,
