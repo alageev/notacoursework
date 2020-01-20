@@ -333,22 +333,20 @@ app.get(`/bingoExit`, (request, response) => {
         .then((data) => {
             if (data != ``) {
                 for (let i = 0; i < data.length; i++) {
+                    let newPlayers = [];
                     for (let j = 0; j < data[i].players.length; j++) {
-                        let newPlayers = [];
                         if (data[i].players[j] === request.cookies[`nickname`]) {
                             if (data[i].players[j].length === 1) {
                                 db.query(`delete * from bingoschema.games where id = ${data[i].id}`);
-                            } else {
-                                for (let k = 0; k < data[i].players.length; k++) {
-                                    if (k !== j) {
-                                        newPlayers.push(data[i].players[k]);
-                                    }
-                                }
-                                newPlayers = newPlayers.toString();
-                                newPlayers = newPlayers.substr(1, newPlayers.length - 2);
-                                db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${data[i].id}`)
+                            } else if (k !== j) {
+                                newPlayers.push(data[i].players[k]);
                             }
                         }
+                    }
+                    if (newPlayers.length > 0) {
+                        newPlayers = newPlayers.toString();
+                        newPlayers = newPlayers.substr(1, newPlayers.length - 2);
+                        db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${data[i].id}`)
                     }
                 }
             }
