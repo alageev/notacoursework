@@ -15,6 +15,9 @@
                 <input type="submit">
             </form>
             <form action="{{{formAction}}}" class="rightForm">
+                {{#if bingoPage}}
+                    <input value="{{pageName}}" name="gameID" hidden>
+                {{/if}}
                 <input type="submit" value="{{buttonValue}}">
             </form>
         {{/if}}

@@ -35,7 +35,8 @@ app.get(`/bingoEdit`, (request, response) => {
                     render: true,
                     bingoId: data[0].id,
                     bingoName: data[0].name,
-                    bingoWords: data[0].words
+                    bingoWords: data[0].words,
+                    bingoPage: false
                 });
             });
     }
@@ -105,7 +106,8 @@ app.get(`/tempLogin`, (request, response) => {
         formAction: `/`,
         buttonValue: `Отмена`,
         render: true,
-        gameCode: request.query.gameCode
+        gameCode: request.query.gameCode,
+        bingoPage: false
     });
 });
 
@@ -166,11 +168,12 @@ app.get(`/bingo`, (request, response) => {
                     .then((data) => {
                         response.render(`game`, {
                             pageName: request.query.gameID,
-                            formAction: `/bingoExit?gameID=${request.query.gameID}`,
+                            formAction: `/bingoExit`,
                             buttonValue: `выйти из игры`,
                             render: `true`,
                             bingoWords: data[0].words,
-                            bingoName: data[0].name
+                            bingoName: data[0].name,
+                            bingoPage: true
                         });
                     });
             } else {
@@ -186,6 +189,7 @@ app.get(`/login`, (request, response) => {
             formAction: `/`,
             buttonValue: `Отмена`,
             render: true,
+            bingoPage: false
         });
     } else {
         response.redirect(`/userpage`);
@@ -219,6 +223,7 @@ app.get(`/`, (request, response) => {
         formAction: ``,
         buttonValue: ``,
         render: false,
+        bingoPage: false
     });
 });
 
@@ -228,6 +233,7 @@ app.get(`/register`, (request, response) => {
         formAction: `/`,
         buttonValue: `Отмена`,
         render: true,
+        bingoPage: false
     });
 });
 
@@ -258,6 +264,7 @@ app.get(`/userEdit`, (request, response) => {
         formAction: `/userpage`,
         buttonValue: `Отмена`,
         render: true,
+        bingoPage: false
     });
 });
 
@@ -275,6 +282,7 @@ app.get(`/userpage`, (request, response) => {
                     buttonValue: `Выйти`,
                     bingos: bingoNames,
                     render: true,
+                    bingoPage: false
                 });
             });
     } else {
@@ -306,7 +314,7 @@ app.get(`/exit`, (request, response) => {
                         let newPlayers = [];
                         if (data[i].players[j] === request.cookies[`nickname`]) {
                             if (data[i].players[j].length === 1) {
-                                db.query(`delete * from bingoschema.games where id = ${data[i].id}`);
+                                db.query(`delete * from bingoschema.games where id = '${data[i].id}'`);
                             } else {
                                 for (let k = 0; k < data[i].players.length; k++) {
                                     if (k !== j) {
@@ -315,7 +323,7 @@ app.get(`/exit`, (request, response) => {
                                 }
                                 newPlayers = newPlayers.toString();
                                 newPlayers = newPlayers.substr(1, newPlayers.length - 2);
-                                db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${data[i].id}`)
+                                db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = '${data[i].id}'`)
                             }
                         }
                     }
@@ -334,7 +342,7 @@ app.get(`/bingoExit`, (request, response) => {
                 for (let i = 0; i < data[0].players.length; i++) {
                     if (data[0].players[i] == request.cookies[`nickname`]) {
                         if (data[0].players[i].length === 1) {
-                            db.query(`delete * from bingoschema.games where id = ${data[0].id}`);
+                            db.query(`delete * from bingoschema.games where id = '${data[0].id}'`);
                         }
                     } else {
                         newPlayers.push(data[0].players[i]);
@@ -343,7 +351,7 @@ app.get(`/bingoExit`, (request, response) => {
                 if (newPlayers.length > 0) {
                     newPlayers = newPlayers.toString();
                     newPlayers = newPlayers.substr(1, newPlayers.length - 2);
-                    db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${request.query.gameID}`)
+                    db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = '${request.query.gameID}'`)
                 }
             }
             if (request.cookies[`loggedId`] === `true`){
