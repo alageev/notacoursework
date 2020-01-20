@@ -329,26 +329,22 @@ app.get(`/exit`, (request, response) => {
         })
 });
 app.get(`/bingoExit`, (request, response) => {
-    db.query(`select id, players from bingoschema.games`)
+    db.query(`select players from bingoschema.games where id ='${request.query.gameID}'`)
         .then((data) => {
-            if (data != ``) {
-                for (let i = 0; i < data.length; i++) {
-                    let newPlayers = [];
-                    for (let j = 0; j < data[i].players.length; j++) {
-                        if (data[i].players[j] === request.cookies[`nickname`]) {
-                            if (data[i].players[j].length === 1) {
-                                db.query(`delete * from bingoschema.games where id = ${data[i].id}`);
-                            }
-                        } else {
-                            newPlayers.push(data[i].players[j]);
-                        }
+            let newPlayers = [];
+            for (let i = 0; i < data[0].players.length; i++) {
+                if (data[0].players[i] == request.cookies[`nickname`]) {
+                    if (data[0].players[i].length === 1) {
+                        db.query(`delete * from bingoschema.games where id = ${data[0].id}`);
                     }
-                    if (newPlayers.length > 0) {
-                        newPlayers = newPlayers.toString();
-                        newPlayers = newPlayers.substr(1, newPlayers.length - 2);
-                        db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${data[i].id}`)
-                    }
+                } else {
+                    newPlayers.push(data[0].players[i]);
                 }
+            }
+            if (newPlayers.length > 0) {
+                newPlayers = newPlayers.toString();
+                newPlayers = newPlayers.substr(1, newPlayers.length - 2);
+                db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${request.query.gameID}`)
             }
             if (request.cookies[`loggedId`] === `true`){
                 response.redirect(`/userpage`);
