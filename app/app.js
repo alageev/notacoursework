@@ -338,9 +338,9 @@ app.get(`/bingoExit`, (request, response) => {
                         if (data[i].players[j] === request.cookies[`nickname`]) {
                             if (data[i].players[j].length === 1) {
                                 db.query(`delete * from bingoschema.games where id = ${data[i].id}`);
-                            } else if (k !== j) {
-                                newPlayers.push(data[i].players[k]);
                             }
+                        } else {
+                            newPlayers.push(data[i].players[j]);
                         }
                     }
                     if (newPlayers.length > 0) {
