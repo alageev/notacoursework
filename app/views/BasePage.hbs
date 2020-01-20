@@ -8,10 +8,19 @@
 <body>
     <header>
         {{pageName}}
-        <form action="/gameCode">
-            <input placeholder="123456" required pattern="[0-9]{6}" name="gameCode">
-            <input type="submit">
-        </form>
+
+        {{#if render}}
+            <form action="/gameCode" class="leftForm">
+                <input placeholder="123456" required pattern="[0-9]{6}" name="gameCode">
+                <input type="submit">
+            </form>
+            <form action="{{{formAction}}}" class="rightForm">
+                {{#if bingoPage}}
+                    <input value="{{pageName}}" name="gameID" hidden>
+                {{/if}}
+                <input type="submit" value="{{buttonValue}}">
+            </form>
+        {{/if}}
     </header>
     {{{body}}}
 </body>

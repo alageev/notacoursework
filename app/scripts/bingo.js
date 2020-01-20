@@ -8,100 +8,109 @@ const colors = [
     `#ff453a`, //red
     `#64d2ff`, //teal
     `#ffd60a`  //yellow
-]
+];
 
-let marked = Array(25)
-let seed = document.cookie.split(`;`)
-for (let names of seed){
-    if (names.substr(0, cookieName.length - 1) === cookieName){
-        seed = names.substr(cookieName.length + 1)
+
+let marked = Array(25);
+let cookies = document.cookie.split(`;`);
+let seed = ``;
+console.log(cookies)
+for (let cookie of cookies){
+    if (cookie.substr(0, 6) === cookieName){
+        seed = cookie.substr(7);
+        break;
     } else {
-        seed = ``
+        seed = ``;
     }
 }
-console.log(seed)
 
 window.onload = () => {
-    colorCheck(marked)
-}
+    colorCheck();
+};
 
 if (seed === ``){
-    generateBingo()
+    generateBingo();
 } else {
-    newBingo()
+    newBingo(seed);
 }
 
 for (let i = 0; i < 25; i++){
-    document.getElementById(`td${i}`).style.background = ``
+    document.getElementById(`td${i}`).style.background = ``;
 }
 
 function randomColor(code = Math.round(-0.5 + Math.random() * 9)){
-    return colors[code % 9]
+    return colors[code % 9];
 }
 
 function generateBingo(){
-    let used = Array(phrases.length)
+    let used = Array(phrases.length);
     for (let i = 0; i < phrases.length; i++){
-        used[i] = false
+        used[i] = false;
     }
-    seed = ``
+    seed = ``;
     for (let i = 0; i < 5; i++){
         for (let j = 0; j < 5; j++){
-            let code = Math.round(-0.5 + Math.random() * phrases.length)
+            let code = Math.round(-0.5 + Math.random() * phrases.length);
             while (used[code]){
-                code = Math.round(-0.5 + Math.random() * phrases.length)
+                code = Math.round(-0.5 + Math.random() * phrases.length);
             }
-            used[code] = true
-            document.getElementById(`td${5 * i + j}`).innerText = phrases[code]
-            document.getElementById(`td${5 * i + j}`).style.background = ``
-            document.getElementById(`td${5 * i + j}`).style.color = `#000000`
-            seed += `${to62(code)}`
+            used[code] = true;
+            document.getElementById(`td${5 * i + j}`).innerText = phrases[code];
+            document.getElementById(`td${5 * i + j}`).style.background = ``;
+            document.getElementById(`td${5 * i + j}`).style.color = `#000000`;
+            seed += `${to62(code)}`;
         }
     }
-    seed += `00000`
-    document.cookie = `${cookieName}=${seed}`
+    seed += `00000`;
+    document.cookie = `${cookieName}=${seed}`;
 }
 
 function newBingo(newSeed){
-    seed = newSeed
-    let colorCode
+    let colorCode;
     for (let i = 0; i < 25; i++){
         if (i % 5 === 0){
-            colorCode = to10(newSeed.substr(25 + Math.floor(i / 5), 1))
+            colorCode = to10(newSeed.substr(25 + Math.floor(i / 5), 1));
         }
-        document.getElementById(`td${i}`).innerText = phrases[to10(seed.substr(i, 1))]
+        let tempString = phrases[to10(newSeed.substr(i, 1))];
+        while (tempString.includes(`_`) || tempString.includes(`;`)){
+            if (tempString.includes(`_`)){
+                tempString = tempString.replace(`_`, ` `);
+            } else {
+                tempString = tempString.replace(`;`, `,`);
+            }
+        }
+        document.getElementById(`td${i}`).innerText = tempString;
         if (colorCode % 2 === 1){
-            document.getElementById(`td${i}`).style.color = `#f0f0f0`
-            document.getElementById(`td${i}`).style.background = colors[Math.round(-0.5 + Math.random() * 9)]
+            document.getElementById(`td${i}`).style.color = `#f0f0f0`;
+            document.getElementById(`td${i}`).style.background = colors[Math.round(-0.5 + Math.random() * 9)];
             marked[i] = true
         } else {
-            document.getElementById(`td${i}`).style.background = ``
-            document.getElementById(`td${i}`).style.color = `#000000`
+            document.getElementById(`td${i}`).style.background = ``;
+            document.getElementById(`td${i}`).style.color = `#000000`;
             marked[i] = false
         }
-        colorCode = Math.floor(colorCode / 2)
+        colorCode = Math.floor(colorCode / 2);
     }
-    markedToSeed()
+    markedToSeed();
 }
 
-function colorCheck(marked){
+function colorCheck(){
     for (let i = 0; i < 25; i++){
         if (marked[i]){
-            document.getElementById(`td${i}`).style.color = `#ffffff`
-            document.getElementById(`td${i}`).style.background = randomColor()
+            document.getElementById(`td${i}`).style.color = `#ffffff`;
+            document.getElementById(`td${i}`).style.background = randomColor();
         }
     }
 }
 
 function updateBingo(i){
-    marked[i] = !marked[i]
-    let isBingo = false
+    marked[i] = !marked[i];
     if (document.getElementById(`td${i}`).style.background === ``){
-        document.getElementById(`td${i}`).style.background = randomColor()
-        document.getElementById(`td${i}`).style.color = `#ffffff`
+        document.getElementById(`td${i}`).style.background = randomColor();
+        document.getElementById(`td${i}`).style.color = `#ffffff`;
     } else {
-        document.getElementById(`td${i}`).style.background = ``
-        document.getElementById(`td${i}`).style.color = `#000000`
+        document.getElementById(`td${i}`).style.background = ``;
+        document.getElementById(`td${i}`).style.color = `#000000`;
     }
     if (
         marked[Math.floor(i / 5) * 5] &&
@@ -127,12 +136,10 @@ function updateBingo(i){
         marked[16] &&
         marked[20]
     ){
-        isBingo = true
+
+        alert(`BINGO!`);
     }
-    if (isBingo){
-        alert(`BINGO!`)
-    }
-    markedToSeed()
+    markedToSeed();
 }
 
 
@@ -140,40 +147,40 @@ function updateBingo(i){
 function to62(number){
     switch (true){
         case number < 10:
-            return number
+            return number;
         case 9 < number && number < 36:
-            return String.fromCodePoint(87 + number)
+            return String.fromCodePoint(87 + number);
         case 35 < number :
-            return String.fromCodePoint(29 + number)
+            return String.fromCodePoint(29 + number);
     }
 }
 
 function to10(number){
     switch (true){
         case code(number) <= code(`9`):
-            return code(number) - code(`0`)
+            return code(number) - code(`0`);
         case code(`a`) <= code(number) && code(number) <= code(`z`):
-            return code(number) - code(`a`) + 10
+            return code(number) - code(`a`) + 10;
         case code(`A`) <= code(number) && code(number) <= code(`Z`):
-            return code(number) - code(`A`) + 36
+            return code(number) - code(`A`) + 36;
     }
 }
 
 function code(number){
-    return String(number).charCodeAt(0)
+    return String(number).charCodeAt(0);
 }
 
 function markedToSeed(){
-    seed = seed.substr(0, 25)
+    seed = seed.substr(0, 25);
     for (let i = 0; i < 5; i++){
-        let result = 0
+        let result = 0;
         for (let j = 0; j < 5; j++){
             if (marked[5 * i + j]){
-                result += Math.pow(2, j)
+                result += Math.pow(2, j);
             }
         }
-        seed += to62(result)
+        seed += to62(result);
     }
-    document.cookie = `${cookieName}=${seed}`
+    document.cookie = `${cookieName}=${seed}`;
 }
 

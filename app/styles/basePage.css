@@ -3,13 +3,22 @@ header {
     width: 100%;
     height: 30%;
     font-size: 40px;
-    padding:20px;
-    margin-left: -20px;
-    /*color:white;*/
+    padding: 20px 20px 20px 0;
     font-family: sans-serif;
     font-weight:bold;
+    text-align: center;
 }
 body {
-    padding-left: 20px;
     margin:0px
+}
+
+.leftForm {
+    float:left;
+    margin-left: 20px;
+    width: 300px;
+}
+.rightForm {
+    float:right;
+    margin-right: 40px;
+    width: 300px;
 }
