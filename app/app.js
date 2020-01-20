@@ -147,7 +147,7 @@ app.get(`/gameCode`, (request, response) => {
                 }
                 if (isPlaying) {
                     response.redirect(`/bingo?gameID=${request.query.gameCode}`);
-                } else {
+                } else if (request.cookies[`nickname`] !== ``){
                     db.query(`update bingoschema.games set players = array_append(players, 
                 '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
                         .then(() => {
