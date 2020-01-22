@@ -57,12 +57,12 @@ app.get(`/bingoStart`, (request, response) => {
     } else {
         db.query(`select id from bingoschema.games`)
             .then((data) => {
-                let gameCode = Math.round(99999.5 + Math.random() * 999999);
+                let gameCode = Math.round(99999.5 + Math.random() * 900001);
                 if (data != ``) {
                     while (!complete) {
                         for (let i = 0; i < data.length; i++) {
                             if (gameCode === data[i].id) {
-                                gameCode = Math.round(99999.5 + Math.random() * 999999);
+                                gameCode = Math.round(99999.5 + Math.random() * 900001);
                                 break;
                             }
                         }
@@ -86,8 +86,8 @@ app.get(`/bingoStart`, (request, response) => {
                                     }
                                 }
                                 if (!isGame) {
-                                    db.query(`insert into bingoschema.games (id, players, bingo_id) values 
-                                ('${gameCode}', '{${request.cookies[`nickname`]}}', ${bingo_id})`)
+                                    db.query(`insert into bingoschema.games (id, bingo_id, players) values 
+                                (${gameCode}, ${bingo_id}, '{${request.cookies[`nickname`]}}')`)
                                         .then(() => {
                                             response.redirect(`/bingo?gameID=${gameCode}`);
                                         })
@@ -131,7 +131,7 @@ app.get(`/tempLoginCheck`, (request, response) => {
 });
 
 app.get(`/gameCode`, (request, response) => {
-    db.query(`select players from bingoschema.games where id = '${request.query.gameCode}'`)
+    db.query(`select players from bingoschema.games where id = ${request.query.gameCode}`)
         .then((data) => {
             if (data == ``){
                 if (request.cookies[`loggedIn`] === `true`){
@@ -151,7 +151,7 @@ app.get(`/gameCode`, (request, response) => {
                     response.redirect(`/bingo?gameID=${request.query.gameCode}`);
                 } else if (request.cookies[`nickname`] !== ``){
                     db.query(`update bingoschema.games set players = array_append(players, 
-                '${request.cookies[`nickname`]}') where id = '${request.query.gameCode}'`)
+                '${request.cookies[`nickname`]}') where id = ${request.query.gameCode}`)
                         .then(() => {
                             response.redirect(`/bingo?gameID=${request.query.gameCode}`)
                         });
@@ -161,7 +161,7 @@ app.get(`/gameCode`, (request, response) => {
 });
 
 app.get(`/bingo`, (request, response) => {
-    db.query(`select bingo_id from bingoschema.games where id = '${request.query.gameID}'`)
+    db.query(`select bingo_id from bingoschema.games where id = ${request.query.gameID}`)
         .then((data) => {
             if (data != ``) {
                 db.query(`select name, words from bingoschema.bingos where id = ${data[0].bingo_id}`)
@@ -314,7 +314,7 @@ app.get(`/exit`, (request, response) => {
                         let newPlayers = [];
                         if (data[i].players[j] === request.cookies[`nickname`]) {
                             if (data[i].players[j].length === 1) {
-                                db.query(`delete * from bingoschema.games where id = '${data[i].id}'`);
+                                db.query(`delete * from bingoschema.games where id = ${data[i].id}`);
                             } else {
                                 for (let k = 0; k < data[i].players.length; k++) {
                                     if (k !== j) {
@@ -323,7 +323,7 @@ app.get(`/exit`, (request, response) => {
                                 }
                                 newPlayers = newPlayers.toString();
                                 newPlayers = newPlayers.substr(1, newPlayers.length - 2);
-                                db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = '${data[i].id}'`)
+                                db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = ${data[i].id}`)
                             }
                         }
                     }
@@ -335,14 +335,16 @@ app.get(`/exit`, (request, response) => {
         })
 });
 app.get(`/bingoExit`, (request, response) => {
-    db.query(`select players from bingoschema.games where id ='${request.query.gameID}'`)
+    db.query(`select players from bingoschema.games where id =${request.query.gameID}`)
         .then((data) => {
-            if (data != ``) {
                 let newPlayers = [];
+                console.log(data[0])
+
                 for (let i = 0; i < data[0].players.length; i++) {
-                    if (data[0].players[i] == request.cookies[`nickname`]) {
-                        if (data[0].players[i].length === 1) {
-                            db.query(`delete * from bingoschema.games where id = '${data[0].id}'`);
+                    if (data[0].players[i] === request.cookies[`nickname`]) {
+                        if (data[0].players.length === 1) {
+                            db.query(`delete from bingoschema.games where id = ${request.query.gameID}`)
+                                .catch(()=>{console.log(`error is here`)});
                         }
                     } else {
                         newPlayers.push(data[0].players[i]);
@@ -350,10 +352,9 @@ app.get(`/bingoExit`, (request, response) => {
                 }
                 if (newPlayers.length > 0) {
                     newPlayers = newPlayers.toString();
-                    newPlayers = newPlayers.substr(1, newPlayers.length - 2);
-                    db.query(`update set players='{${newPlayers}}' from bingoschema.games where id = '${request.query.gameID}'`)
+                    db.query(`update bingoschema.games set players='{${newPlayers}}' where id = ${request.query.gameID}`)
+                        .catch(()=>{console.log(`error is in set`)})
                 }
-            }
             if (request.cookies[`loggedId`] === `true`){
                 response.redirect(`/userpage`);
             } else {
