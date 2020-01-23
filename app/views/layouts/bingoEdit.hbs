@@ -1,8 +1,12 @@
 <form action="/bingoChange">
     <input name="bingoId" placeholder="{{bingoId}}" value="{{bingoId}}" hidden>
-    <input name="bingoName" style="margin-left:20px" placeholder="{{bingoName}}" value="{{bingoName}}">
+    Название бинго:
+    <input name="bingoName" placeholder="{{{bingoName}}}" value="{{{bingoName}}}">
     <br>
-    <textarea name="bingoWords" style="width:80%; margin-left:20px">{{bingoWords}}</textarea>
+    Слова:
     <br>
-    <button type="submit" style="margin-left:20px">Сохранить</button>
+    <textarea name="bingoWords" style="width:80%" rows="10">{{bingoWords}}</textarea>
+    <br>
+    <button type="submit">Сохранить</button>
+    <button type="submit" formaction="/deleteBingo" style="color:red">Удалить</button>
 </form>
