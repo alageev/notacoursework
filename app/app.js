@@ -125,36 +125,6 @@ app.get(`/bingoStart`, (request, response) => {
     }
 });
 
-app.get(`/tempLogin`, (request, response) => {
-    response.render(`tempLogin`, {
-        pageName: `Временный вход`,
-        formAction: `/`,
-        buttonValue: `Отмена`,
-        render: true,
-        gameCode: request.query.gameCode,
-        bingoPage: false
-    });
-});
-
-app.get(`/tempLoginCheck`, (request, response) => {
-    db.query(`select nickname from bingoschema.users`)
-        .then((data) => {
-            let nicknameIsUsed = false;
-            for (let nickname of data[0].nickname) {
-                if (nickname === request.query.nickname) {
-                    nicknameIsUsed = true;
-                }
-            }
-            if (!nicknameIsUsed) {
-                response.cookie(`nickname`, request.query.nickname);
-                response.cookie(`loggedIn`, true);
-                response.redirect(`/gameCode?gameCode=${request.query.gameCode}`);
-            } else {
-                response.redirect(`/tempLogin?gameCode=${request.query.gameCode}`);
-            }
-        });
-});
-
 app.get(`/gameCode`, (request, response) => {
     db.query(`select players from bingoschema.games where id = ${request.query.gameCode}`)
         .then((data) => {
@@ -345,7 +315,9 @@ app.get(`/exit`, (request, response) => {
                                 db.query(`delete from bingoschema.games where id = ${data[i].id}`)
                             }
                         } else {
-                            newPlayers.push(data[i].players[j]);
+                            if (data[i].players[j] !== ``) {
+                                newPlayers.push(data[i].players[j]);
+                            }
                         }
                     }
                     if (newPlayers.length !== data[i].players.length) {
