@@ -2,8 +2,7 @@
 <form>
     {{#each bingos}}
         <label>
-            <input type="radio" name="bingoName" value="{{{this}}}" class="radio">
-            {{this}}
+            <input type="radio" name="bingoID" value="{{{id}}}" class="radio">{{name}}
         </label>
         <br>
     {{/each}}
@@ -11,4 +10,3 @@
     <input type="submit" value="запустить игру" formaction="/bingoStart">
     <input type="submit" value="создать бинго" formaction="/createBingo">
 </form>
-

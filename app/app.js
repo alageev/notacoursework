@@ -4,8 +4,8 @@ const exphbs = require(`express-handlebars`);
 const cookieParser = require('cookie-parser');
 const pgp = require(`pg-promise`)();
 const app = express();
-const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
-//const db = pgp("postgres://postgres:1@127.0.0.1:5432/bingodatabase");
+//const db = pgp(`postgres://nwxuyewwrvrnph:3a4212fd6b652dc571deb79b14561304ad53046d2a192861de74921130c5d95c@ec2-79-125-126-205.eu-west-1.compute.amazonaws.com:5432/d7m188e1rhggl0`);
+const db = pgp("postgres://postgres:1@127.0.0.1:5432/bingodatabase");
 
 app.engine(`.hbs`, exphbs({
     defaultLayout: `BasePage`,
@@ -23,10 +23,10 @@ app.set(`views`, path.join(__dirname, `views/layouts`));
 app.listen(process.env.PORT || 8080);
 
 app.get(`/bingoEdit`, (request, response) => {
-    if (request.query.bingoName === undefined){
+    if (request.query.bingoID === undefined){
         response.redirect(`/userpage`)
     } else {
-        db.query(`select id, words from bingoschema.bingos where name = '${request.query.bingoName}' and author = '${request.cookies[`nickname`]}'`)
+        db.query(`select name, words from bingoschema.bingos where id = ${request.query.bingoID}`)
             .then((data) => {
                 let words = data[0].words.toString();
                 while (words.includes(`,`)){
@@ -40,10 +40,9 @@ app.get(`/bingoEdit`, (request, response) => {
                     formAction: `/userpage`,
                     buttonValue: `Отмена`,
                     render: true,
-                    bingoId: data[0].id,
-                    bingoName: request.query.bingoName,
-                    bingoWords: words,
-                    bingoPage: false
+                    bingoId: request.query.bingoID,
+                    bingoName: data[0].name,
+                    bingoWords: words
                 });
             });
     }
@@ -77,10 +76,10 @@ app.get(`/deleteBingo`, (request, response) => {
 
 app.get(`/bingoStart`, (request, response) => {
     let complete = false;
-    if (request.query.bingoName === undefined){
+    if (request.query.bingoID === undefined){
         response.redirect(`/userpage`)
     } else {
-        db.query(`select id from bingoschema.games`)
+        db.query(`select id from bingoschema.games where id = ${request.query.bingoID}`)
             .then((data) => {
                 let gameCode = Math.round(99999.5 + Math.random() * 900001);
                 if (data != ``) {
@@ -94,7 +93,7 @@ app.get(`/bingoStart`, (request, response) => {
                         complete = true;
                     }
                 }
-                db.query(`select id from bingoschema.bingos where name = '${request.query.bingoName}' 
+                db.query(`select id from bingoschema.bingos where id = ${request.query.bingoID}
             and author = '${request.cookies[`nickname`]}'`)
                     .then((data) => {
                         let bingo_id = data[0].id;
@@ -183,8 +182,7 @@ app.get(`/login`, (request, response) => {
             pageName: `Вход`,
             formAction: `/`,
             buttonValue: `Отмена`,
-            render: true,
-            bingoPage: false
+            render: true
         });
     } else {
         response.redirect(`/userpage`);
@@ -210,11 +208,7 @@ app.get(`/loginCheck`, (request, response) => {
 
 app.get(`/`, (request, response) => {
     response.render(`main`, {
-        pageName: `Главная страница`,
-        formAction: ``,
-        buttonValue: ``,
-        render: false,
-        bingoPage: false
+        pageName: `Главная страница`
     });
 });
 
@@ -223,8 +217,7 @@ app.get(`/register`, (request, response) => {
         pageName: `Регистрация`,
         formAction: `/`,
         buttonValue: `Отмена`,
-        render: true,
-        bingoPage: false
+        render: true
     });
 });
 
@@ -249,31 +242,29 @@ app.get(`/registrationCheck`, (request, response) => {
         });
 });
 
-app.get(`/userEdit`, (request, response) => {
-    response.render(`userEdit`, {
-        pageName: `Редактировать профиль`,
-        formAction: `/userpage`,
-        buttonValue: `Отмена`,
-        render: true,
-        bingoPage: false
-    });
-});
+// app.get(`/userEdit`, (request, response) => {
+//     response.render(`userEdit`, {
+//         pageName: `Редактировать профиль`,
+//         formAction: `/userpage`,
+//         buttonValue: `Отмена`,
+//         render: true
+//     });
+// });
 
 app.get(`/userpage`, (request, response) => {
     if (request.cookies[`loggedIn`] === `true`) {
         db.query(`select * from bingoschema.bingos where author = '${request.cookies[`nickname`]}' order by id`)
             .then((data) => {
-                let bingoNames = [];
+                let bingos = [];
                 for (let i = 0; i < data.length; i++) {
-                    bingoNames[i] = data[i].name;
+                    bingos[i] = {name : data[i].name, id: data[i].id};
                 }
                 response.render(`userpage`, {
                     pageName: `Мои бинго`,
                     formAction: `/exit`,
                     buttonValue: `Выйти`,
-                    bingos: bingoNames,
-                    render: true,
-                    bingoPage: false
+                    bingos: bingos,
+                    render: true
                 });
             });
     } else {
@@ -351,7 +342,7 @@ app.get(`/bingoExit`, (request, response) => {
                 db.query(`update bingoschema.games set players='{${newPlayers}}' where id = ${request.query.gameID}`)
             }
             response.cookie(`${request.query.gameID}`, ``, {maxAge: -1});
-            if (request.cookies[`loggedId`] === `true`){
+            if (request.cookies[`loggedIn`] === `true`){
                 response.redirect(`/userpage`);
             } else {
                 response.redirect(`/`);
