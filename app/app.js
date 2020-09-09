@@ -13,11 +13,11 @@ app.engine(`.hbs`, exphbs({
 }));
 
 app.use(cookieParser(/*`secretCookieString`*/));
-app.use(`/scripts`, express.static(__dirname + `/scripts`));
-app.use(`/styles`, express.static(__dirname + `/styles`));
+app.use(`/scripts`, express.static(`${__dirname}/scripts`));
+app.use(`/styles`, express.static(`${__dirname}/styles`));
 
 app.set(`view engine`, `.hbs`);
-app.set(`views`, path.join(__dirname, `views/`));
+app.set(`views`, `${__dirname}/views/`);
 
 app.listen(process.env.PORT || 8080);
 
@@ -251,7 +251,7 @@ app.get(`/userpage`, (request, response) => {
                 }
                 db.query(`select isAdmin from bingoschema.users where nickname = '${request.cookies[`nickname`]}'`)
                     .then((data) => {
-                        console.log(data)
+                        // console.log(data)
                         response.render(`userpage`, {
                             pageName: `Мои бинго`,
                             formAction: `/exit`,

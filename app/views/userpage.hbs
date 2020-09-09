@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="styles/userpage.css">
+<div class="leftmenu">
+<form>
+    <table>
+        {{#each bingos}}
+            <tr>
+                <td>
+                    <label>
+                        <input type="radio" name="bingoID" value="{{{id}}}" class="radio">{{name}}
+                    </label>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+    <input type="submit" value="изменить бинго" formaction="/bingoEdit">
+    <input type="submit" value="запустить игру" formaction="/bingoStart">
+    <input type="submit" value="создать бинго" formaction="/createBingo">
+</form>
+
+</div>
+<div class="rightmenu">
+    <p>Здравствуй, {{{nickname}}}!</p>
+    <form>
+        <input type="submit" value="изменить профиль" formaction="/userEdit">
+<!--        <input type="submit" value="" formaction="">-->
+    </form>
+    {{#if isAdmin}}
+        <form>
+            <input type="submit" value="просмотреть пользователей" formaction="/users">
+            <input type="submit" value="просмотреть бинго пользователей" formaction="/bingos">
+            <input type="submit" value="просмотреть запущенные игры" formaction="/games">
+        </form>
+    {{/if}}
+</div>

@@ -1,8 +1,23 @@
-label{
+tr{
     background: #f1f2f6;
-    width: 50%;
     margin-top:20px;
     height:30px;
     vertical-align: center;
+    width:100%
 }
-
+table{
+    width:100%
+}
+.leftmenu{
+    width:75%;
+    float:left
+}
+.rightmenu{
+    width:25%;
+    float:right
+}
+p{
+    font-size: 30px;
+    font-family: sans-serif;
+    font-weight:bold;
+}

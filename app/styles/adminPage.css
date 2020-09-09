@@ -10,13 +10,7 @@ td {
     text-align: center;
     padding: 5px;
     font-family: sans-serif;
-    width:18%;
 }
-
-caption {
-    font-size:40px
-}
-
-.GameCode {
-    margin: 2.5%
+li {
+    font-family: sans-serif;
 }
