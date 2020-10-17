@@ -1,8 +1,6 @@
 # Not A Course Work
-Вся дополнительная информация ниже ↓↓↓↓
 
-https://Please-visit-it.alageev.repl.co
+Курсовая работа по WEB-программированию
 
-http://itmobingo.herokuapp.com
+Развёрнуто [здесь](http://itmobingo.herokuapp.com).
 
-Вся дополнительная информация выше ↑↑↑↑
